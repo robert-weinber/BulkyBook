@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -59,25 +60,58 @@ namespace BulkyBook.Areas.Admin.Controllers
         }
 
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult Upsert(Product product)
-        //{
-        //    if(ModelState.IsValid)
-        //    {
-        //        if (product.Id == 0)
-        //        {
-        //            _unitOfWork.Product.Add(product);
-        //        }
-        //        else
-        //        {
-        //            _unitOfWork.Product.Update(product);
-        //        }
-        //        _unitOfWork.Save();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(product);
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Upsert(ProductVM productVM)
+        {
+            if (ModelState.IsValid)
+            {
+                string webRootPath = _hostEnvironment.WebRootPath;
+                var files = HttpContext.Request.Form.Files;
+                if(files.Count>0)
+                {
+                    string fileName = Guid.NewGuid().ToString();
+                    var uploads = Path.Combine(webRootPath, @"images\products");
+                    var extension = Path.GetExtension(files[0].FileName);
+
+                    if(productVM.Product.imageUrl != null)
+                    {
+                        //edit, remove old image
+                        var imagePath = Path.Combine(webRootPath, productVM.Product.imageUrl.TrimStart('\\'));
+                        if(System.IO.File.Exists(imagePath))
+                        {
+                            System.IO.File.Delete(imagePath);
+                        }
+                    }
+                    using(var fileStreams = new FileStream(Path.Combine(uploads,fileName+extension),FileMode.Create))
+                    {
+                        files[0].CopyTo(fileStreams);
+                    }
+                    productVM.Product.imageUrl = @"\images\products\" + fileName + extension;
+                }
+                else
+                {
+                    //update without image change
+                    if(productVM.Product.Id != 0)
+                    {
+                        Product objFromDb = _unitOfWork.Product.Get(productVM.Product.Id);
+                        productVM.Product.imageUrl = objFromDb.imageUrl;
+                    }
+                }
+
+                if (productVM.Product.Id == 0)
+                {
+                    _unitOfWork.Product.Add(productVM.Product);
+                }
+                else
+                {
+                    _unitOfWork.Product.Update(productVM.Product);
+                }
+                _unitOfWork.Save();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(productVM);
+        }
 
         #region API CALLS
 
