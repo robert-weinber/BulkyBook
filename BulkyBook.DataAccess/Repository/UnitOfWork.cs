@@ -26,6 +26,8 @@ namespace BulkyBook.DataAccess.Repository
 
         public ICoverTypeRepository CoverType { get; private set; }
 
+        public ICompanyRepository Company { get; private set; }
+
         public void Dispose()
         {
             _db.Dispose();
