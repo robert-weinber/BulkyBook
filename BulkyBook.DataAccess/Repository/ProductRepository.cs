@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BulkyBook.DataAccess.Repository
 {
@@ -13,7 +12,7 @@ namespace BulkyBook.DataAccess.Repository
     {
         private readonly ApplicationDbContext _db;
 
-        public ProductRepository(ApplicationDbContext db) :base(db)
+        public ProductRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }
@@ -21,11 +20,11 @@ namespace BulkyBook.DataAccess.Repository
         public void Update(Product product)
         {
             var objFromDb = _db.Products.FirstOrDefault(s => s.Id == product.Id);
-            if(objFromDb !=null)
+            if (objFromDb != null)
             {
-                if(product.imageUrl != null)
+                if (product.ImageUrl != null)
                 {
-                    objFromDb.imageUrl = product.imageUrl;
+                    objFromDb.ImageUrl = product.ImageUrl;
                 }
                 objFromDb.ISBN = product.ISBN;
                 objFromDb.Price = product.Price;
@@ -37,6 +36,7 @@ namespace BulkyBook.DataAccess.Repository
                 objFromDb.CategoryId = product.CategoryId;
                 objFromDb.Author = product.Author;
                 objFromDb.CoverTypeId = product.CoverTypeId;
+                
             }
         }
     }

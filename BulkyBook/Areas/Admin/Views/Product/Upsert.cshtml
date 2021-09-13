@@ -1,8 +1,10 @@
 ﻿@model BulkyBook.Models.ViewModels.ProductVM
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     var title = "Create Product";
 }
+
 
 <form method="post" enctype="multipart/form-data">
     <div class="row p-3 border">
@@ -110,10 +112,10 @@
             </div>
             <div class="form-group row">
                 <div class="col-4">
-                    Image
+                   Image
                 </div>
                 <div class="col-8">
-                    <input type="file" name="files" id="uploadBox" multiple class="form-control"/>
+                    <input type="file" name="files" id="uploadBox" multiple class="form-control" />
                 </div>
             </div>
             <div class="form-group row">
@@ -138,24 +140,25 @@
         </div>
         @if (Model.Product.Id != 0)
         {
-        <div class="col-3 offset-1 pt-4">
-            <img src="@Model.Product.imageUrl" width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
-        </div>
-
+            <div class="col-3 offset-1 pt-4">
+                <img src="@Model.Product.ImageUrl" width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+            </div>
         }
     </div>
 </form>
 
-@section Scripts{
-    <partial name="_ValidationScriptsPartial" />
-    <script src="https://cdn.tiny.cloud/1/rh7irry2qxnlfvr7jmz69sfxvvzc90howq3qsh69ilb03v1v/tinymce/5/tinymce.min.js"></script>
+@section Scripts{ 
+<partial name="_ValidationScriptsPartial" />
+<script src="https://cdn.tiny.cloud/1/n94ifuzvl80pchikopiwgz2esrw8n28dwcywvpejlqrregfp/tinymce/5/tinymce.min.js"></script>
+
 <script>
 
     tinymce.init({
         selector: 'textarea',
-        plugins: 'listis',
+        plugins: 'lists',
         menubar: 'file edit format'
     });
+
 
     function validateInput() {
         if (document.getElementById("uploadBox").value == "") {
@@ -163,6 +166,8 @@
             return false;
         }
         return true;
-    }
+    };
+
 </script>
+
 }

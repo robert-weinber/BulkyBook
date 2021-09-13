@@ -4,6 +4,7 @@ $(document).ready(function () {
     loadDataTable();
 });
 
+
 function loadDataTable() {
     dataTable = $('#tblData').DataTable({
         "ajax": {
@@ -22,7 +23,7 @@ function loadDataTable() {
                         return `<input type="checkbox" disabled checked />`
                     }
                     else {
-                        return `<input type="checkbox" disabled />`
+                        return `<input type="checkbox" disabled/>`
                     }
                 },
                 "width": "10%"
@@ -33,13 +34,13 @@ function loadDataTable() {
                     return `
                             <div class="text-center">
                                 <a href="/Admin/Company/Upsert/${data}" class="btn btn-success text-white" style="cursor:pointer">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-edit"></i> 
                                 </a>
                                 <a onclick=Delete("/Admin/Company/Delete/${data}") class="btn btn-danger text-white" style="cursor:pointer">
-                                    <i class="fas fa-trash-alt"></i>
+                                    <i class="fas fa-trash-alt"></i> 
                                 </a>
                             </div>
-                    `;
+                           `;
                 }, "width": "25%"
             }
         ]
@@ -64,7 +65,7 @@ function Delete(url) {
                         dataTable.ajax.reload();
                     }
                     else {
-                        toastr.success(data.message);
+                        toastr.error(data.message);
                     }
                 }
             });

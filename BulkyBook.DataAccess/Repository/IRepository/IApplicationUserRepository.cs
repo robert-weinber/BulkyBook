@@ -5,8 +5,8 @@ using System.Text;
 
 namespace BulkyBook.DataAccess.Repository.IRepository
 {
-    public interface ICoverTypeRepository : IRepository<CoverType>
+    public interface IApplicationUserRepository : IRepository<ApplicationUser>
     {
-        void Update(CoverType coverType);
+        
     }
 }

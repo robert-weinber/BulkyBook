@@ -1,8 +1,10 @@
 ﻿@model BulkyBook.Models.Category
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     var title = "Create Category";
 }
+
 
 <form method="post">
     <div class="row p-3 border">
@@ -41,6 +43,6 @@
     </div>
 </form>
 
-@section Scripts{
-    <partial name="_ValidationScriptsPartial" />
+@section Scripts{ 
+<partial name="_ValidationScriptsPartial" />
 }

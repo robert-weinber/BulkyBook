@@ -1,10 +1,10 @@
-﻿using BulkyBook.DataAccess.Repository.IRepository;
-using BulkyBook.Models;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BulkyBook.DataAccess.Repository.IRepository;
+using BulkyBook.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
@@ -17,39 +17,40 @@ namespace BulkyBook.Areas.Admin.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+
         public IActionResult Index()
         {
             return View();
         }
+
         public IActionResult Upsert(int? id)
         {
             Company company = new Company();
-            if(id == null)
+            if (id == null)
             {
-                //create
+                //this is for create
                 return View(company);
             }
-            //edit
+            //this is for edit
             company = _unitOfWork.Company.Get(id.GetValueOrDefault());
-
-            if(company == null)
+            if (company == null)
             {
                 return NotFound();
             }
-
             return View(company);
-        }
 
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Upsert(Company company)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 if (company.Id == 0)
                 {
                     _unitOfWork.Company.Add(company);
+                    
                 }
                 else
                 {
@@ -61,6 +62,7 @@ namespace BulkyBook.Areas.Admin.Controllers
             return View(company);
         }
 
+
         #region API CALLS
 
         [HttpGet]
@@ -70,18 +72,18 @@ namespace BulkyBook.Areas.Admin.Controllers
             return Json(new { data = allObj });
         }
 
-
         [HttpDelete]
         public IActionResult Delete(int id)
         {
             var objFromDb = _unitOfWork.Company.Get(id);
-            if(objFromDb == null)
+            if (objFromDb == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });
             }
             _unitOfWork.Company.Remove(objFromDb);
             _unitOfWork.Save();
             return Json(new { success = true, message = "Delete Successful" });
+
         }
 
         #endregion
