@@ -27,7 +27,7 @@ namespace BulkyBook.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
+        //private readonly IEmailSender _emailSender;
         private readonly IMailService _mailService;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUnitOfWork _unitOfWork;
@@ -36,7 +36,7 @@ namespace BulkyBook.Areas.Identity.Pages.Account
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
+           // IEmailSender emailSender,
             IMailService mailService,
             RoleManager<IdentityRole> roleManager,
             IUnitOfWork unitOfWork)
@@ -44,7 +44,7 @@ namespace BulkyBook.Areas.Identity.Pages.Account
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
-            _emailSender = emailSender;
+            //_emailSender = emailSender;
             _mailService = mailService;
             _roleManager = roleManager;
             _unitOfWork = unitOfWork;
