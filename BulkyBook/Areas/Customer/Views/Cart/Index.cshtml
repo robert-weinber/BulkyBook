@@ -30,7 +30,7 @@
                             </div>
                             <div class="col-12 text-sm-center col-lg-5 text-lg-right row">
                                 <div class="col-4 text-md-right" style="padding-top:5px;">
-                                    <h6><strong>$@item.Product.Price<span class="text-muted">x</span> @item.Count </strong></h6>
+                                    <h6><strong>$@item.Product.Price.ToString("0.00")<span class="text-muted">x</span> @item.Count </strong></h6>
                                 </div>
                                 <div class="col-6 col-sm-4 col-lg-6">
                                     <div class="float-right mx-1">
@@ -58,7 +58,7 @@
                             <ul class="item-group">
                                 <li class="item-group-item d-flex justify-content-between bg-light">
                                     <span class="text-info"> Total (USD)</span>
-                                    <strong class="text-info">$ <span id="txtOrderTotal">@Model.OrderHeader.OrderTotal</span></strong>
+                                    <strong class="text-info">$ <span id="txtOrderTotal">@Model.OrderHeader.OrderTotal.ToString("0.00")</span></strong>
                                 </li>
                             </ul>
                         </div>
