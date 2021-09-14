@@ -19,7 +19,7 @@ namespace BulkyBook.Utility.Emailer
             _mailSettings = mailSettings.Value;
         }
 
-        public async Task DoSendEmailAsync(string mail, string subject,string message)
+        public async Task SendEmailAsync(string mail, string subject,string message)
         {
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);

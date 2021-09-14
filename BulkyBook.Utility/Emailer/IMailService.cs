@@ -7,7 +7,7 @@ namespace BulkyBook.Utility.Emailer
 {
     public interface IMailService
     {
-        Task DoSendEmailAsync(string mail, string subject, string message);
+        Task SendEmailAsync(string mail, string subject, string message);
         Task SendEmailAsync(MailRequest mailRequest);
     }
 }
