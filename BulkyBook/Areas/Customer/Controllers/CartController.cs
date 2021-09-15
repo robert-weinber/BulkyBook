@@ -24,6 +24,7 @@ namespace BulkyBook.Areas.Customer.Controllers
         private readonly IMailService _mailService;
         private readonly IUnitOfWork _unitOfWork;
 
+        [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
 
         public CartController(IUnitOfWork unitOfWork, IMailService mailService, UserManager<IdentityUser> userManager)
@@ -168,7 +169,7 @@ namespace BulkyBook.Areas.Customer.Controllers
         public IActionResult SummaryPost()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);            
             ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser
                                                         .GetFirstOrDefault(c => c.Id == claim.Value, 
                                                         includeProperties: "Company");
@@ -187,6 +188,7 @@ namespace BulkyBook.Areas.Customer.Controllers
             List<OrderDetails> orderDetailsList = new List<OrderDetails>();
             foreach(var item in ShoppingCartVM.ListCart)
             {
+                item.Price = SD.GetPriceBasedOnQuantity(item.Count, item.Product.Price, item.Product.Price50, item.Product.Price100);
                 OrderDetails orderDetails = new OrderDetails()
                 {
                     ProductId = item.ProductId,
@@ -200,9 +202,15 @@ namespace BulkyBook.Areas.Customer.Controllers
             }
 
             _unitOfWork.ShoppingCart.RemoveRange(ShoppingCartVM.ListCart);
+            _unitOfWork.Save();
             HttpContext.Session.SetInt32(SD.ssShoppingCart, 0);
 
             return RedirectToAction("OrderConfirmation","Cart", new { id = ShoppingCartVM.OrderHeader.Id });
+        }
+
+        public IActionResult OrderConfirmation(int id)
+        {
+            return View(id);
         }
     }
 }
