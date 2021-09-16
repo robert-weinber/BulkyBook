@@ -218,7 +218,7 @@ namespace BulkyBook.Areas.Customer.Controllers
                 var options = new ChargeCreateOptions
                 {
                     Amount = Convert.ToInt32(ShoppingCartVM.OrderHeader.OrderTotal * 100),
-                    Currency = "usd",
+                    Currency = "huf",
                     Description = "Order ID : " + ShoppingCartVM.OrderHeader.Id,
                     Source = stripeToken
                 };

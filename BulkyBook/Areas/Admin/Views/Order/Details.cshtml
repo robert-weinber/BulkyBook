@@ -1,5 +1,8 @@
 ﻿@model BulkyBook.Models.ViewModels.OrderDetailsVM
 @using BulkyBook.Utility
+@using Microsoft.Extensions.Options
+
+@inject IOptions<BulkyBook.Utility.StripeSettings> Stripe
 <form method="post">
     <input hidden asp-for="OrderHeader.Id" />
     <br />
@@ -157,23 +160,23 @@
                                 <div class="row my-1">
                                     <div class="col-3">Transaction ID</div>
                                     <div class="col-9">
-                                        <input asp-for="OrderHeader.TransactionId"  type="text" readonly class="form-control" />
+                                        <input asp-for="OrderHeader.TransactionId" type="text" readonly class="form-control" />
                                     </div>
                                 </div>
                                 <div class="row my-1">
                                     @if (Model.OrderHeader.TransactionId == null)
                                     {
-                                    <div class="col-3">Payment Due Date</div>
-                                    <div class="col-9">
-                                        <input value="@Model.OrderHeader.PaymentDueDate.ToShortDateString()" readonly type="text" class="form-control" />
-                                    </div>
+                                        <div class="col-3">Payment Due Date</div>
+                                        <div class="col-9">
+                                            <input value="@Model.OrderHeader.PaymentDueDate.ToShortDateString()" readonly type="text" class="form-control" />
+                                        </div>
                                     }
                                     else
                                     {
-                                    <div class="col-3">Payment Date</div>
-                                    <div class="col-9">
-                                        <input value="@Model.OrderHeader.PaymentDate.ToShortDateString()" readonly id="paymentDate" type="text" class="form-control" />
-                                    </div>
+                                        <div class="col-3">Payment Date</div>
+                                        <div class="col-9">
+                                            <input value="@Model.OrderHeader.PaymentDate.ToShortDateString()" readonly id="paymentDate" type="text" class="form-control" />
+                                        </div>
                                     }
                                 </div>
                                 <div class="row my-1">
@@ -183,7 +186,7 @@
                                     </div>
                                 </div>
                             }
-                            </div>
+                        </div>
                         <div class="col-12 col-lg-5 offset-lg-1">
                             <h4 class="d-flex justify-content-between align-items-center mb-3">
                                 <span class="text-primary">Order Summary</span>
@@ -236,15 +239,37 @@
                             {
                                 <label class="btn btn-primary form-control">@Model.OrderHeader.OrderStatus</label>
                             }
+                            @{
+                                var OrderTotalForStripe = Model.OrderHeader.OrderTotal * 100;
+                            }
+                            @if (Model.OrderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment &&
+                              Model.OrderHeader.OrderStatus == SD.StatusShipped)
+                            {
+                                <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                                        data-key="@Stripe.Value.PublishableKey"
+                                        data-amount="@OrderTotalForStripe"
+                                        data-name="Bulky Book"
+                                        data-label="Place Order"
+                                        data-description="Get Books, For Less"
+                                        data-locale="auto"
+                                        data-currency="huf"
+                                        data-allow-remember-me="false"
+                                        data-image="https://stripe.com/img/documentation/checkout/marketplace.png">
+                                </script>
+                                <script>
+                                    document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
+                                </script>
+                                <button type="submit" value="Place Order" class="btn btn-success form-control">PAY NOW</button>
+                            }
 
                             @if (Model.OrderHeader.OrderStatus != SD.StatusRefunded &&
-                              Model.OrderHeader.OrderStatus != SD.StatusCancelled &&
-                              (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee)))
+                           Model.OrderHeader.OrderStatus != SD.StatusCancelled &&
+                           (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee)))
                             {
-                        <div class="pt-2">
-                            <a asp-action="CancelOrder" asp-route-id="@Model.OrderHeader.Id"
-                               class="btn btn-danger form-control">Cancel Order</a>
-                        </div>
+                                <div class="pt-2">
+                                    <a asp-action="CancelOrder" asp-route-id="@Model.OrderHeader.Id"
+                                       class="btn btn-danger form-control">Cancel Order</a>
+                                </div>
                             }
 
                         </div>
@@ -256,38 +281,38 @@
 </form>
 
 @section Scripts {
-<script>
-    function validateInput() {
-        var tracking = document.getElementById("trackingNumber").value;
-        var carrier = document.getElementById("carrier").value;
-        if (tracking.toString() == '') {
-            swal("Error", "Please enter tracking number", "error")
-            return false;
-        }
-        else {
-            if (carrier.toString() == '') {
-                swal("Error", "Please enter carrier", "error")
+    <script>
+        function validateInput() {
+            var tracking = document.getElementById("trackingNumber").value;
+            var carrier = document.getElementById("carrier").value;
+            if (tracking.toString() == '') {
+                swal("Error", "Please enter tracking number", "error")
                 return false;
             }
             else {
-                return true;
+                if (carrier.toString() == '') {
+                    swal("Error", "Please enter carrier", "error")
+                    return false;
+                }
+                else {
+                    return true;
+                }
             }
         }
-    }
 
-    $(document).ready(function () {
-        var shippingDate = document.getElementById("shippingDate");
+        $(document).ready(function () {
+            var shippingDate = document.getElementById("shippingDate");
 
-        if (shippingDate.value == '0001. 01. 01.') {
-            shippingDate.value = "";
-        }
+            if (shippingDate.value == '0001. 01. 01.') {
+                shippingDate.value = "";
+            }
 
-        var paymentDate = document.getElementById("paymentDate");
+            var paymentDate = document.getElementById("paymentDate");
 
-        if (paymentDate.value == '0001. 01. 01.') {
-            paymentDate.value = "";
-        }
+            if (paymentDate.value == '0001. 01. 01.') {
+                paymentDate.value = "";
+            }
 
-    });
-</script>
+        });
+    </script>
 }
