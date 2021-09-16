@@ -5,7 +5,7 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="py-4 my.4">
+<div class="py-4">
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="row form-group"">
         <div class="col-8 offset-2">
@@ -33,7 +33,7 @@
                         </div>
                         <div class="py-2 input-group">
                             <div class="input-group-prepend">
-                                +36
+                                <span class="input-group-text">+36</span>
                             </div>
                             <input asp-for="Input.PhoneNumber" placeholder="Phone Number" class="form-control"></input>
                             <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
