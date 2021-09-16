@@ -4,6 +4,7 @@ using BulkyBook.Models.ViewModels;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,59 @@ namespace BulkyBook.Areas.Admin.Controllers
                 OrderDetails = _unitOfWork.OrderDetails.GetAll(o => o.OrderId == id, includeProperties: "Product")
             };
             return View(OrderVM);
+        }
+
+
+        [Authorize(Roles = SD.Role_Admin+","+SD.Role_Employee)]
+        public IActionResult StartProcessing(int id)
+        {
+            OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id);
+            orderHeader.OrderStatus = SD.StatusProcessing;
+            _unitOfWork.Save();
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult ShipOrder()
+        {
+            OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == OrderVM.OrderHeader.Id);
+            orderHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
+            orderHeader.Carrier = OrderVM.OrderHeader.Carrier;
+            orderHeader.ShippingDate = DateTime.Now;
+            orderHeader.OrderStatus = SD.StatusShipped;
+            _unitOfWork.Save();
+            return RedirectToAction("Index");
+        }
+
+
+
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult CancelOrder(int id)
+        {
+            OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id);
+            if(orderHeader.PaymentStatus == SD.StatusApproved)
+            {//return payment
+                var options = new RefundCreateOptions
+                {
+                    Amount = Convert.ToInt32(orderHeader.OrderTotal * 100),
+                    Reason = RefundReasons.RequestedByCustomer,
+                    Charge = orderHeader.TransactionId
+                };
+                var service = new RefundService();
+                Refund refund = service.Create(options);
+
+                orderHeader.OrderStatus = SD.StatusRefunded;
+                orderHeader.PaymentStatus = SD.StatusRefunded;
+            }
+            else
+            {
+                orderHeader.OrderStatus = SD.StatusCancelled;
+                orderHeader.PaymentStatus = SD.StatusCancelled;
+            }
+            
+            _unitOfWork.Save();
+            return RedirectToAction("Index");
         }
 
         #region API CALLS
