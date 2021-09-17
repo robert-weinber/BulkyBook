@@ -44,6 +44,7 @@ namespace BulkyBook
             //services.Configure<EmailOptions>(Configuration);
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+            services.Configure<TwilioSettings>(Configuration.GetSection("Twilio"));
             services.AddTransient<IMailService, MailService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
