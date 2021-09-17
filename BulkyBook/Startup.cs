@@ -1,4 +1,5 @@
 using BulkyBook.DataAccess.Data;
+using BulkyBook.DataAccess.Initializer;
 using BulkyBook.DataAccess.Repository;
 using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Utility;
@@ -51,6 +52,7 @@ namespace BulkyBook
             services.AddSingleton<IBrainTreeGate, BraintreeGate>();
             services.AddTransient<IMailService, MailService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
             services.ConfigureApplicationCookie(options =>
@@ -78,7 +80,7 @@ namespace BulkyBook
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -100,7 +102,7 @@ namespace BulkyBook
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            dbInitializer.Initialize();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
